@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.Net;
 using System.Net.Http;
 
@@ -14,6 +15,10 @@ namespace csharp_encode_decode_html
             Console.WriteLine("\nAfter HtmlEncode: " + b);
             Console.WriteLine("\nAfter HtmlDecode: " + c);
 
+            // Post using RestSharp
+            SendPost(b);
+
+            //Post using System.Net.Http
             try
             {
                 using (var client = new HttpClient())
@@ -33,6 +38,28 @@ namespace csharp_encode_decode_html
                 Console.WriteLine(ex.Message);
             }
             Console.Read();
+        }
+
+        private static void SendPost(string b)
+        {
+            try
+            {
+                var client = new RestClient("http://localhost:62395/post");
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("content-type", "application/json");
+                request.AddParameter("application/json", "\"" + b + "\"", ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    Console.Write(response.Content);
+                }
+                else
+                    Console.Write(response.Content);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
